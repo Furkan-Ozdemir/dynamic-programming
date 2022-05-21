@@ -1,3 +1,5 @@
+/* Basic class for the pieces */
+
 public class ChessPiece {
     public String name;
     public String type;
