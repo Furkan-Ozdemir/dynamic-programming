@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class App {
+public class Furkan_Özdemir_2018510117 {
     static int GOLD_AMOUNT, MAX_LEVEL_ALLOWED, NUMBER_OF_AVAILABLE_PIECES_PER_LEVEL;
     static List<ChessPiece> chessPieceList;
 
@@ -28,16 +28,31 @@ public class App {
 
         System.out.println("================== TRIAL #1 ==================");
         System.out.println("Computer's Greedy Approach result");
+        long startTime = System.nanoTime();
         greedyApproach(chessPieceList, NUMBER_OF_AVAILABLE_PIECES_PER_LEVEL,
                 GOLD_AMOUNT);
+        long endTime = System.nanoTime();
+        System.out.println("Greedy approach run time: " + (endTime - startTime) + " nanoseconds\n");
+
         System.out.println("User's Dynamic Programming results");
+        long startTimeDynamic = System.nanoTime();
         dynamicApproach(chessPieceList, NUMBER_OF_AVAILABLE_PIECES_PER_LEVEL, GOLD_AMOUNT);
+        long endTimeDynamic = System.nanoTime();
+        System.out.println("Dynamic approach run time: " + (endTimeDynamic - startTimeDynamic) + " nanoseconds\n");
 
         System.out.println("================== TRIAL #2 ==================");
         System.out.println("Computer's Random Approach result");
+        long startTimeRandom = System.nanoTime();
         randomApproach(chessPieceList, NUMBER_OF_AVAILABLE_PIECES_PER_LEVEL, GOLD_AMOUNT);
+        long endTimeRandom = System.nanoTime();
+        System.out.println("Random approach run time: " + (endTimeRandom - startTimeRandom) + " nanoseconds\n");
+
         System.out.println("User's Dynamic Programming results");
+        setIsAvailable(MAX_LEVEL_ALLOWED);
+        long startTimeDynamic2 = System.nanoTime();
         dynamicApproach(chessPieceList, NUMBER_OF_AVAILABLE_PIECES_PER_LEVEL, GOLD_AMOUNT);
+        long endTimeDynamic2 = System.nanoTime();
+        System.out.println("Dynamic approach run time: " + (endTimeDynamic2 - startTimeDynamic2) + " nanoseconds");
 
     }
 
@@ -335,6 +350,16 @@ public class App {
         // System.out.println(iterAvailable.next());
     }
 
+    public static ChessPiece findPieceByAttackPoint(List<ChessPiece> list, int attackPoint) {
+        Iterator<ChessPiece> iter = list.iterator();
+        while (iter.hasNext()) {
+            ChessPiece piece = iter.next();
+            if (piece.attackPoints == attackPoint)
+                return piece;
+        }
+        return null;
+    }
+
     public static void dynamicApproach(List<ChessPiece> allPieces, int numOfAvailablePieces, int goldAmount) {
         List<ChessPiece> availablePieces = new ArrayList<ChessPiece>();
         Iterator<ChessPiece> iterator = allPieces.iterator();
@@ -363,23 +388,97 @@ public class App {
          * W-> GOLD_AMOUNT , wt->piecelerin goldu, val-> attack points
          * n-> attack points.length
          */
-        int[] dp = new int[goldAmount + 1];
+        // int[] dp = new int[goldAmount + 1];
 
-        for (int i = 1; i < val.length + 1; i++) {
-            for (int w = goldAmount; w >= 0; w--) {
+        // for (int i = 1; i < val.length + 1; i++) {
+        // for (int w = goldAmount; w >= 0; w--) {
 
-                if (wt[i - 1] <= w) {
-                    // finding the maximum value
-                    dp[w] = Math.max(dp[w], dp[w - wt[i - 1]] + val[i - 1]);
+        // if (wt[i - 1] <= w) {
+        // // finding the maximum value
+        // dp[w] = Math.max(dp[w], dp[w - wt[i - 1]] + val[i - 1]);
 
-                    /* index out of bounds error */
-                    // ChessPiece piece = availablePieces.get(w);
-                    // System.out.println(piece.displayStats());
+        // }
 
-                }
+        // }
+        // }
+        // System.out.println("Total attack points: " + dp[goldAmount]); // end result
 
+        /* ============================================================== */
+
+        int i, w;
+        int K[][] = new int[val.length + 1][goldAmount + 1];
+
+        // Build table K[][] in bottom up manner
+        for (i = 0; i <= val.length; i++) {
+            for (w = 0; w <= goldAmount; w++) {
+                if (i == 0 || w == 0)
+                    K[i][w] = 0;
+                else if (wt[i - 1] <= w)
+                    K[i][w] = Math.max(val[i - 1] +
+                            K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+                else
+                    K[i][w] = K[i - 1][w];
             }
         }
-        System.out.println("Total attack points: " + dp[goldAmount]); // end result
+        // stores the result of Knapsack
+        int res = K[val.length][goldAmount];
+        // System.out.println("Total attack points: " + res);
+        List<Integer> maxAttackPoints = new ArrayList<>();
+
+        w = goldAmount;
+        for (i = val.length; i > 0 && res > 0; i--) {
+
+            // either the result comes from the top
+            // (K[i-1][w]) or from (val[i-1] + K[i-1]
+            // [w-wt[i-1]]) as in Knapsack table. If
+            // it comes from the latter one/ it means
+            // the item is included.
+            if (res == K[i - 1][w])
+                continue;
+            else {
+
+                // This item is included.
+                // System.out.print(wt[i - 1] + " ");
+                // System.out.print(val[i - 1] + " ");
+                maxAttackPoints.add(val[i - 1]);
+
+                /*
+                 * total attack pointi yukarda yazdırmak yerine burda şu şekilde yazdır
+                 * önce wt[i-1]'i yazdır sonra o golda sahip taşı availablePieceden bul ve onu
+                 * yazdır
+                 * ama burda yazdırırken aynı türden taş yazdırılmış ise onu pas geç ve total
+                 * attack pointe onu ekleme
+                 */
+
+                // Since this weight is included its
+                // value is deducted
+                res = res - val[i - 1];
+                w = w - wt[i - 1];
+            }
+        }
+        /* sort the attack points from high to low */
+        Collections.sort(maxAttackPoints, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer p1, Integer p2) {
+                if (p1 > p2) {
+                    return -1;
+                } else if (p1 < p2) {
+                    return 1;
+                } else
+                    return 0;
+            }
+        });
+        int totalAttackPoints = 0;
+        Iterator<Integer> maxIterator = maxAttackPoints.iterator();
+        while (maxIterator.hasNext()) {
+            int maxAttackPoint = maxIterator.next();
+            ChessPiece piece = findPieceByAttackPoint(availablePieces, maxAttackPoint);
+            if (piece.isAvailable) {
+                System.out.println(piece.displayStats());
+                totalAttackPoints += piece.attackPoints;
+                setIndividualAvailable(piece, availablePieces);
+            }
+        }
+        System.out.println("Total attack points: " + totalAttackPoints);
     }
 }
