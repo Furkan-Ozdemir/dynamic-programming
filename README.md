@@ -1,18 +1,19 @@
-## Getting Started
+Value Game Simulation Program
+In this assignment, a simulation program will be implemented for a value-based game utilizing custom chess pieces. The player's decisions will be made using the dynamic programming method, while the opponent will use either the greedy approach or the random approach.
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+The performance of each decision-making method will be evaluated by measuring their execution times during two trials of the game:
 
-## Folder Structure
+* Trial 1: opponent uses greedy approach
+* Trial 2: opponent uses random approach
 
-The workspace contains two folders by default, where:
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+- Simulation
+- Value-based game
+- Chess pieces
+- Dynamic programming
+- Greedy approach
+- Random approach
+- Decision-making method
+- Execution times
+- Performance evaluation
+- Two trials
